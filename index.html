@@ -5,7 +5,8 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
     <style>
         body {
-            background-color: #000000;
+            /* Changed to a gradient to make the black bars less noticeable */
+            background: linear-gradient(to bottom, #1d003b, #000000);
             margin: 0;
             padding: 0;
             display: flex;
@@ -382,18 +383,19 @@
                 this.lastSpeedIncreaseScore = 0;
                 
                 // Two copies of the same background image are created for the scrolling effect
-                this.bg1 = this.add.image(0, 0, 'background1').setOrigin(0, 0);
-                this.bg2 = this.add.image(0, 0, 'background1').setOrigin(0, 0);
-
+                this.bg1 = this.add.image(this.game.config.width / 2, this.game.config.height / 2, 'background1');
+                this.bg2 = this.add.image(this.game.config.width / 2, this.game.config.height / 2, 'background1');
+                
                 // Calculate the scaling factor and apply it to both backgrounds
                 let scaleX = this.game.config.width / this.bg1.width;
                 let scaleY = this.game.config.height / this.bg1.height;
                 let scale = Math.max(scaleX, scaleY);
                 this.bg1.setScale(scale);
                 this.bg2.setScale(scale);
-
+                
                 // Position the second background directly above the first one to start
-                this.bg2.y = -this.bg2.displayHeight;
+                this.bg1.y = -this.bg1.displayHeight / 2;
+                this.bg2.y = this.bg1.y + this.bg2.displayHeight;
 
                 // Create the banana player character with a responsive position
                 this.player = this.physics.add.sprite(this.game.config.width / 2, this.game.config.height * 0.85, 'banana');
@@ -558,13 +560,13 @@
                     }
 
                     // The backgrounds will be moved manually now that they are images
-                    if (this.bg1.y > this.game.config.height) {
-                        this.bg1.y = -this.bg1.displayHeight;
+                    if (this.bg1.y > this.game.config.height + this.bg1.displayHeight / 2) {
+                        this.bg1.y = this.bg2.y - this.bg2.displayHeight;
                     }
-                    if (this.bg2.y > this.game.config.height) {
-                        this.bg2.y = -this.bg2.displayHeight;
+                    if (this.bg2.y > this.game.config.height + this.bg2.displayHeight / 2) {
+                        this.bg2.y = this.bg1.y - this.bg1.displayHeight;
                     }
-
+                    
                     // Smoothly move the banana to the center of its current lane
                     let targetX = this.lanePositions[this.currentLane];
                     if (this.player.x !== targetX) {
@@ -715,8 +717,8 @@
         // --- Game Configuration ---
         const config = {
             type: Phaser.AUTO,
-            width: window.innerWidth,
-            height: window.innerHeight,
+            width: 720,
+            height: 1280,
             parent: 'game-container',
             physics: {
                 default: 'arcade',
@@ -726,7 +728,7 @@
                 }
             },
             scale: {
-                mode: Phaser.Scale.RESIZE,
+                mode: Phaser.Scale.FIT,
                 autoCenter: Phaser.Scale.CENTER_BOTH,
             },
             scene: [SplashScreen, MainMenu, Tutorial, Game, GameOver]
