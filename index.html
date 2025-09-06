@@ -715,8 +715,8 @@
         // --- Game Configuration ---
         const config = {
             type: Phaser.AUTO,
-            width: 720,
-            height: 1280,
+            width: window.innerWidth,
+            height: window.innerHeight,
             parent: 'game-container',
             physics: {
                 default: 'arcade',
@@ -726,7 +726,7 @@
                 }
             },
             scale: {
-                mode: Phaser.Scale.FIT,
+                mode: Phaser.Scale.RESIZE,
                 autoCenter: Phaser.Scale.CENTER_BOTH,
             },
             scene: [SplashScreen, MainMenu, Tutorial, Game, GameOver]
