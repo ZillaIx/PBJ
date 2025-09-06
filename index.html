@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Peanut Butter Jelly Jive!</title>
+    <title>Peanut Butter $Jelly Time!</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
     <style>
         body {
@@ -39,19 +39,19 @@
         }
 
         #username-input {
-            padding: 15px; /* Increased padding */
+            padding: 23px; /* Increased padding by 1.5x */
             border: 2px solid white;
             background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white background */
             color: white;
-            font-size: 28px; /* Increased font size */
+            font-size: 42px; /* Increased font size by 1.5x */
             text-align: center;
-            margin-bottom: 25px; /* Increased margin */
+            margin-bottom: 38px; /* Increased margin by 1.5x */
             font-weight: bold;
         }
 
         #ready-button {
-            padding: 15px 30px; /* Increased padding */
-            font-size: 28px; /* Increased font size */
+            padding: 23px 45px; /* Increased padding by 1.5x */
+            font-size: 42px; /* Increased font size by 1.5x */
             background-color: #ffd700; /* Brighter gold color */
             color: black; /* Black text for contrast */
             border: none;
@@ -78,7 +78,7 @@
           apiKey: "AIzaSyCLoQQc6x0PjMH4TbUZEsRv_Z6l4ubaj3k",
           authDomain: "pbjelly-1db51.firebaseapp.com",
           projectId: "pbjelly-1db51",
-          storageBucket: "pbjelly-1db51.firebasestorage.app",
+          storageBucket: "pbjelly-1db51.firebase-storage.app",
           messagingSenderId: "238324604340",
           appId: "1:238324604340:web:dd8d647bf3b7efcdcb26e1",
           measurementId: "G-FY4HEE1P6D"
@@ -130,7 +130,6 @@
             }
         };
 
-        // Expose Firestore functions to global scope
         window.savePublicScore = async (username, score) => {
             if (!window.db) {
                 console.error("Firestore not initialized.");
@@ -209,6 +208,15 @@
                 let scaleY = this.game.config.height / splashScreenImage.height;
                 let scale = Math.max(scaleX, scaleY);
                 splashScreenImage.setScale(scale);
+                
+                // Add the @zillaraytorr text at the bottom of the splash screen
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.9, '@zillaraytorr', {
+                    fontSize: '48px',
+                    fill: '#ff0000', // Bright red color
+                    stroke: '#4a0404', // Darker red stroke for a gradient effect
+                    strokeThickness: 8,
+                    fontStyle: 'bold'
+                }).setOrigin(0.5);
 
                 this.time.delayedCall(3000, () => {
                     this.scene.start('MainMenu');
@@ -274,11 +282,11 @@
                 };
 
                 // Add High Scores section
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.05, 'TOP 3 HIGH SCORES', { fontSize: '28px', fill: '#FFD700', fontStyle: 'bold' }).setOrigin(0.5);
-                this.loadingText = this.add.text(this.game.config.width / 2, this.game.config.height * 0.1, 'Loading High Scores...', { fontSize: '20px', fill: '#ffffff' }).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.05, 'TOP 3 HIGH SCORES', { fontSize: '42px', fill: '#FFD700', fontStyle: 'bold' }).setOrigin(0.5);
+                this.loadingText = this.add.text(this.game.config.width / 2, this.game.config.height * 0.1, 'Loading High Scores...', { fontSize: '30px', fill: '#ffffff' }).setOrigin(0.5);
                 
                 const scoreTextStyle = {
-                    fontSize: '24px',
+                    fontSize: '36px',
                     fill: '#ffffff',
                     fontStyle: 'bold',
                     stroke: '#000000',
@@ -345,28 +353,29 @@
                     fontSize: '22px',
                     fill: '#ffffff',
                     align: 'center',
-                    wordWrap: { width: this.game.config.width - 40 },
+                    wordWrap: { width: this.game.config.width * 0.6 },
                     fontStyle: 'bold',
                     stroke: '#000000',
                     strokeThickness: 4
                 };
 
+                // The text is now positioned more tightly together
                 this.add.text(this.game.config.width / 2, this.game.config.height * 0.08, 'YOUR MISSION IS TO GET THE HIGHEST SCORE POSSIBLE', headingStyle).setOrigin(0.5);
                 this.add.text(this.game.config.width / 2, this.game.config.height * 0.16, 'Tap or swipe to move sideways.', tutorialStyle).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.24, 'Eat Peanut Butter and Jelly to raise your Groove. Your Groove constantly drains!', tutorialStyle).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.32, 'Avoid Bread to keep your Groove up!', tutorialStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.22, 'Eat Peanut Butter and Jelly to raise your Groove. Your Groove constantly drains!', tutorialStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.28, 'Avoid Bread to keep your Groove up!', tutorialStyle).setOrigin(0.5);
                 
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.42, 'FEVER MODE', headingStyle).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.5, 'When your Groove meter reaches 100, you enter Fever Mode. This makes you invincible for a short time and boosts your score!', tutorialStyle).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.58, 'Eating Power-ups also gives you instant Fever Mode!', tutorialStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.38, 'FEVER MODE', headingStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.44, 'When your Groove meter reaches 100, you enter Fever Mode. This makes you invincible for a short time and boosts your score!', tutorialStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.50, 'Eating Power-ups also gives you instant Fever Mode!', tutorialStyle).setOrigin(0.5);
 
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.68, 'COMBO IS THE KEY', headingStyle).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.76, 'Getting consecutive P&J combos gives you a multiplier! Keep the chain going for bigger scores.', tutorialStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.60, 'COMBO IS THE KEY', headingStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.66, 'Getting consecutive P&J combos gives you a multiplier! Keep the chain going for bigger scores.', tutorialStyle).setOrigin(0.5);
 
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.86, 'MAY THE BEST PLAYERS WIN', headingStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.76, 'MAY THE BEST PLAYERS WIN', headingStyle).setOrigin(0.5);
                 
                 // Add the "GO" button
-                const goButton = this.add.text(this.game.config.width / 2, this.game.config.height * 0.94, 'GO', {
+                const goButton = this.add.text(this.game.config.width / 2, this.game.config.height * 0.84, 'GO', {
                     fontSize: '32px',
                     fill: '#ffffff',
                     backgroundColor: '#00ff00',
@@ -427,7 +436,7 @@
                 this.comboCount = 0;
                 this.comboTimer = 0;
                 this.currentLane = 1;
-                this.OBJECT_SPEED = 300;
+                this.OBJECT_SPEED = 700;
                 this.baseGameSpeed = 6;
                 this.lastSpeedIncreaseScore = 0;
                 this.isGrooveLow = false; // Added flag to track if groove is low
@@ -455,7 +464,7 @@
                 this.comboCount = 0;
                 this.comboTimer = 0;
                 this.currentLane = 1;
-                this.OBJECT_SPEED = 300;
+                this.OBJECT_SPEED = 700;
                 this.baseGameSpeed = 6;
                 this.lastSpeedIncreaseScore = 0;
                 this.isGrooveLow = false; // Reset the flag
@@ -476,9 +485,11 @@
                 this.bg2.y = this.bg1.y + this.bg2.displayHeight;
 
                 // Create the banana player character with a responsive position
-                this.player = this.physics.add.sprite(this.game.config.width / 2, this.game.config.height * 0.85, 'banana_run');
+                this.player = this.physics.add.sprite(this.game.config.width / 2, this.game.config.height * 0.96, 'banana_run');
                 this.player.body.allowGravity = false;
                 this.player.setScale(0.99);
+                this.player.setOrigin(0.5, 0.9); // Set the origin to the bottom of the banana
+                this.player.setCircle(this.player.width / 2, 0, this.player.height * 0.4); // Adjust bounding box
 
                 this.anims.create({
                     key: 'run',
@@ -622,7 +633,7 @@
                 this.physics.add.overlap(this.player, this.objects, this.collectObject, null, this);
                 this.physics.add.overlap(this.player, this.powerups, this.collectPowerup, null, this);
 
-                // Load and play music if it's not already playing (it will be started in the new VideoIntro scene)
+                // Set up sounds
                 feverSound = this.sound.add('fever_sound');
                 goodSound = this.sound.add('good_sound');
                 badSound = this.sound.add('bad_sound');
@@ -702,18 +713,21 @@
                 let x = this.lanePositions[lane];
                 let y = -50;
                 
+                // Get the current speed, which doubles in fever mode
+                let currentObjectSpeed = this.isFeverMode ? this.OBJECT_SPEED * 2 : this.OBJECT_SPEED;
+
                 if (Phaser.Math.Between(1, 10) === 1) {
                     let powerup = this.powerups.create(x, y, 'powerup');
                     powerup.setScale(0.255);
-                    powerup.setCircle(187);
-                    powerup.setVelocityY(this.OBJECT_SPEED);
+                    powerup.setCircle(powerup.width * 0.5, 0, 0);
+                    powerup.setVelocityY(currentObjectSpeed);
                 } else {
                     let objectType = Phaser.Math.Between(0, 2);
                     let imageKey = ['peanut_butter', 'jelly', 'bread'][objectType];
                     let object = this.objects.create(x, y, imageKey);
                     object.setScale(0.255);
-                    object.setCircle(187);
-                    object.setVelocityY(this.OBJECT_SPEED);
+                    object.setCircle(object.width * 0.5, 0, 0);
+                    object.setVelocityY(currentObjectSpeed);
                 }
             }
             
