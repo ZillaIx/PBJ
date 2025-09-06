@@ -39,22 +39,26 @@
         }
 
         #username-input {
-            padding: 10px;
+            padding: 15px; /* Increased padding */
             border: 2px solid white;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white background */
             color: white;
-            font-size: 24px;
+            font-size: 28px; /* Increased font size */
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px; /* Increased margin */
+            font-weight: bold;
         }
 
         #ready-button {
-            padding: 10px 20px;
-            font-size: 24px;
-            background-color: #00ff00;
-            color: white;
+            padding: 15px 30px; /* Increased padding */
+            font-size: 28px; /* Increased font size */
+            background-color: #ffd700; /* Brighter gold color */
+            color: black; /* Black text for contrast */
             border: none;
             cursor: pointer;
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Drop shadow for depth */
+            font-weight: bold;
         }
     </style>
     <!-- Firebase Libraries -->
@@ -182,6 +186,8 @@
         let highscores = [];
         let username = '';
         let music, feverSound;
+        let goodSound, badSound;
+        let noSound, overSound;
 
         // --- Scene Definitions ---
 
@@ -231,7 +237,15 @@
                 let scale = Math.max(scaleX, scaleY);
                 startScreen.setScale(scale);
 
-                // Create username input and ready button
+                // Re-create the username container if it doesn't exist.
+                let usernameContainer = document.getElementById('username-container');
+                if (!usernameContainer) {
+                    usernameContainer = document.createElement('div');
+                    usernameContainer.id = 'username-container';
+                    document.body.appendChild(usernameContainer);
+                }
+                usernameContainer.style.display = 'flex'; // Make sure it's visible
+
                 const usernameInput = document.createElement('input');
                 usernameInput.type = 'text';
                 usernameInput.placeholder = 'Enter X Username';
@@ -241,8 +255,11 @@
                 readyButton.id = 'ready-button';
                 readyButton.textContent = 'Ready';
 
-                // Get the existing username container from the HTML
-                const usernameContainer = document.getElementById('username-container');
+                // Clear any existing children and append new ones
+                while (usernameContainer.firstChild) {
+                    usernameContainer.removeChild(usernameContainer.firstChild);
+                }
+
                 usernameContainer.appendChild(usernameInput);
                 usernameContainer.appendChild(readyButton);
 
@@ -252,17 +269,26 @@
                         usernameInput.style.border = '2px solid red';
                         return;
                     }
-                    usernameContainer.remove();
+                    usernameContainer.style.display = 'none'; // Hide the container instead of removing it
                     this.scene.start('Tutorial');
                 };
 
                 // Add High Scores section
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.05, 'TOP 3 HIGH SCORES', { fontSize: '24px', fill: '#ffc107' }).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.05, 'TOP 3 HIGH SCORES', { fontSize: '28px', fill: '#FFD700', fontStyle: 'bold' }).setOrigin(0.5);
                 this.loadingText = this.add.text(this.game.config.width / 2, this.game.config.height * 0.1, 'Loading High Scores...', { fontSize: '20px', fill: '#ffffff' }).setOrigin(0.5);
+                
+                const scoreTextStyle = {
+                    fontSize: '24px',
+                    fill: '#ffffff',
+                    fontStyle: 'bold',
+                    stroke: '#000000',
+                    strokeThickness: 4
+                };
+
                 this.highScoreText = [
-                    this.add.text(this.game.config.width / 2, this.game.config.height * 0.15, '', { fontSize: '20px', fill: '#ffffff' }).setOrigin(0.5),
-                    this.add.text(this.game.config.width / 2, this.game.config.height * 0.2, '', { fontSize: '20px', fill: '#ffffff' }).setOrigin(0.5),
-                    this.add.text(this.game.config.width / 2, this.game.config.height * 0.25, '', { fontSize: '20px', fill: '#ffffff' }).setOrigin(0.5)
+                    this.add.text(this.game.config.width / 2, this.game.config.height * 0.15, '', scoreTextStyle).setOrigin(0.5),
+                    this.add.text(this.game.config.width / 2, this.game.config.height * 0.2, '', scoreTextStyle).setOrigin(0.5),
+                    this.add.text(this.game.config.width / 2, this.game.config.height * 0.25, '', scoreTextStyle).setOrigin(0.5)
                 ];
 
                 // Subscribe to real-time high score updates
@@ -305,37 +331,87 @@
                 startScreen.setScale(scale);
                 
                 // Add the tutorial text
+                const headingStyle = {
+                    fontSize: '32px',
+                    fill: '#FFD700', // Gold color
+                    align: 'center',
+                    wordWrap: { width: this.game.config.width - 40 },
+                    fontStyle: 'bold',
+                    stroke: '#000000',
+                    strokeThickness: 6
+                };
+                
                 const tutorialStyle = {
-                    fontSize: '18px',
+                    fontSize: '22px',
                     fill: '#ffffff',
                     align: 'center',
-                    wordWrap: { width: this.game.config.width - 40 }
+                    wordWrap: { width: this.game.config.width - 40 },
+                    fontStyle: 'bold',
+                    stroke: '#000000',
+                    strokeThickness: 4
                 };
 
-                const headingStyle = {
-                    fontSize: '24px',
-                    fill: '#ffc107',
-                    align: 'center',
-                    wordWrap: { width: this.game.config.width - 40 }
-                };
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.08, 'YOUR MISSION IS TO GET THE HIGHEST SCORE POSSIBLE', headingStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.16, 'Tap or swipe to move sideways.', tutorialStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.24, 'Eat Peanut Butter and Jelly to raise your Groove. Your Groove constantly drains!', tutorialStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.32, 'Avoid Bread to keep your Groove up!', tutorialStyle).setOrigin(0.5);
+                
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.42, 'FEVER MODE', headingStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.5, 'When your Groove meter reaches 100, you enter Fever Mode. This makes you invincible for a short time and boosts your score!', tutorialStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.58, 'Eating Power-ups also gives you instant Fever Mode!', tutorialStyle).setOrigin(0.5);
 
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.1, 'YOUR MISSION IS TO GET THE HIGHEST SCORE POSSIBLE', headingStyle).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.16, '* Eat Peanut Butter and Jelly to maintain your Groove. Your Groove meter constantly drains, so keep an eye on it!', tutorialStyle).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.23, '* Avoid Bread, which lowers your Groove.', tutorialStyle).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.3, 'THE ULTIMATE SCORE BOOSTER', headingStyle).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.35, 'When your Groove meter reaches 100, you enter Fever Mode. This makes you invincible for a short time and boosts your score.', tutorialStyle).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.42, 'Eating Power-ups also gives you instant Fever Mode!', tutorialStyle).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.5, 'MAY THE BEST PLAYERS WIN', headingStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.68, 'COMBO IS THE KEY', headingStyle).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.76, 'Getting consecutive P&J combos gives you a multiplier! Keep the chain going for bigger scores.', tutorialStyle).setOrigin(0.5);
+
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.86, 'MAY THE BEST PLAYERS WIN', headingStyle).setOrigin(0.5);
                 
                 // Add the "GO" button
-                const goButton = this.add.text(this.game.config.width / 2, this.game.config.height * 0.6, 'GO', {
+                const goButton = this.add.text(this.game.config.width / 2, this.game.config.height * 0.94, 'GO', {
                     fontSize: '32px',
                     fill: '#ffffff',
                     backgroundColor: '#00ff00',
-                    padding: { x: 20, y: 10 }
+                    padding: { x: 20, y: 10 },
+                    fontStyle: 'bold'
                 }).setOrigin(0.5).setInteractive();
 
                 goButton.on('pointerdown', () => {
+                    this.scene.start('VideoIntro');
+                });
+            }
+        }
+
+        // NEW: VideoIntro Scene
+        class VideoIntro extends Phaser.Scene {
+            constructor() {
+                super('VideoIntro');
+            }
+
+            preload() {
+                // We'll use a placeholder video URL here, you'll need to replace this
+                this.load.video('introVideo', 'assets/intro.mp4');
+                this.load.audio('music', 'assets/pnut.ogg');
+            }
+
+            create() {
+                // Destroy all game objects and UI
+                this.children.each(child => child.destroy());
+
+                const video = this.add.video(this.game.config.width / 2, this.game.config.height / 2, 'introVideo');
+                
+                // Scale the video to fit the screen
+                let scaleX = this.game.config.width / video.width;
+                let scaleY = this.game.config.height / video.height;
+                let scale = Math.max(scaleX, scaleY);
+                video.setScale(scale);
+                
+                video.play(true);
+
+                // Start the music when the video plays
+                music = this.sound.add('music', { loop: true });
+                if (music) music.play();
+                
+                // Wait 5 seconds for the video to finish, then transition to the game
+                this.time.delayedCall(5000, () => {
                     this.scene.start('Game');
                 });
             }
@@ -352,11 +428,9 @@
                 this.comboTimer = 0;
                 this.currentLane = 1;
                 this.OBJECT_SPEED = 300;
-                this.baseGameSpeed = 2;
+                this.baseGameSpeed = 6;
                 this.lastSpeedIncreaseScore = 0;
-                this.lanePositions = [];
-                this.objectSpawnTimer = null;
-                this.startX = 0;
+                this.isGrooveLow = false; // Added flag to track if groove is low
             }
 
             preload() {
@@ -366,9 +440,12 @@
                 this.load.image('jelly', 'assets/jelly.png');
                 this.load.image('bread', 'assets/bread.png');
                 this.load.image('powerup', 'assets/groove_powerup.png');
-                this.load.image('banana', 'assets/vehicle.png');
-                this.load.audio('music', 'assets/pnut.ogg');
+                this.load.spritesheet('banana_run', 'assets/banana_run.png', { frameWidth: 128, frameHeight: 469 });
                 this.load.audio('fever_sound', 'assets/fever.ogg');
+                this.load.audio('good_sound', 'assets/good.ogg'); // New good sound
+                this.load.audio('bad_sound', 'assets/bad.ogg'); // New bad sound
+                this.load.audio('no_sound', 'assets/no.ogg'); // New sound for low groove
+                this.load.audio('over_sound', 'assets/over.ogg'); // New sound for game over
             }
 
             create() {
@@ -379,8 +456,9 @@
                 this.comboTimer = 0;
                 this.currentLane = 1;
                 this.OBJECT_SPEED = 300;
-                this.baseGameSpeed = 2;
+                this.baseGameSpeed = 6;
                 this.lastSpeedIncreaseScore = 0;
+                this.isGrooveLow = false; // Reset the flag
                 
                 // Two copies of the same background image are created for the scrolling effect
                 this.bg1 = this.add.image(this.game.config.width / 2, this.game.config.height / 2, 'background1');
@@ -398,9 +476,18 @@
                 this.bg2.y = this.bg1.y + this.bg2.displayHeight;
 
                 // Create the banana player character with a responsive position
-                this.player = this.physics.add.sprite(this.game.config.width / 2, this.game.config.height * 0.85, 'banana');
+                this.player = this.physics.add.sprite(this.game.config.width / 2, this.game.config.height * 0.85, 'banana_run');
                 this.player.body.allowGravity = false;
-                this.player.setScale(0.04);
+                this.player.setScale(0.99);
+
+                this.anims.create({
+                    key: 'run',
+                    frames: this.anims.generateFrameNumbers('banana_run', { start: 0, end: 3 }),
+                    frameRate: 9.7,
+                    repeat: -1
+                });
+                
+                this.player.play('run');
 
                 this.lanePositions = [
                     this.game.config.width * 0.25,
@@ -413,10 +500,10 @@
                 this.powerups = this.physics.add.group();
 
                 // Set up the HUD with responsive positions
-                this.scoreText = this.add.text(this.game.config.width * 0.02, this.game.config.height * 0.02, 'Score: 0', { fontSize: '24px', fill: '#ffffff' });
-                this.grooveText = this.add.text(this.game.config.width * 0.02, this.game.config.height * 0.06, 'Groove: 100%', { fontSize: '24px', fill: '#ffffff' });
-                this.comboText = this.add.text(this.game.config.width / 2, this.game.config.height * 0.15, '', { fontSize: '28px', fill: '#ff8c00' }).setOrigin(0.5);
-                this.feverText = this.add.text(this.game.config.width / 2, this.game.config.height * 0.12, 'FEVER MODE!', { fontSize: '28px', fill: '#ffff00' }).setOrigin(0.5);
+                this.scoreText = this.add.text(this.game.config.width * 0.02, this.game.config.height * 0.02, 'Score: 0', { fontSize: '24px', fill: '#ffffff', fontStyle: 'bold' });
+                this.grooveText = this.add.text(this.game.config.width * 0.02, this.game.config.height * 0.06, 'Groove: 100%', { fontSize: '24px', fill: '#ffffff', fontStyle: 'bold' });
+                this.comboText = this.add.text(this.game.config.width / 2, this.game.config.height * 0.15, '', { fontSize: '28px', fill: '#ff8c00', fontStyle: 'bold' }).setOrigin(0.5);
+                this.feverText = this.add.text(this.game.config.width / 2, this.game.config.height * 0.12, 'FEVER MODE!', { fontSize: '28px', fill: '#ffff00', fontStyle: 'bold' }).setOrigin(0.5);
                 this.feverText.visible = false;
 
                 this.grooveBar = this.add.graphics();
@@ -430,14 +517,16 @@
                 this.topScoreText = this.add.text(this.game.config.width * 0.98, this.game.config.height * 0.02, `Top 1 - ${topScore.username}: ${topScore.score}`, {
                     fontSize: '20px',
                     fill: '#ffc107',
-                    align: 'right'
+                    align: 'right',
+                    fontStyle: 'bold'
                 }).setOrigin(1, 0);
 
                 // Display Current Player's High Score
                 this.userScoreText = this.add.text(this.game.config.width * 0.98, this.game.config.height * 0.05, `You - ${username}: ${userHighScore}`, {
                     fontSize: '20px',
                     fill: '#ffffff',
-                    align: 'right'
+                    align: 'right',
+                    fontStyle: 'bold'
                 }).setOrigin(1, 0);
 
                 // Create the Pause and Play buttons with responsive positions
@@ -455,16 +544,18 @@
                     padding: { x: 10, y: 5 }
                 }).setOrigin(0, 0).setInteractive().setVisible(false);
 
-                const buttonWidth = 60;
-                const buttonHeight = 25;
+                // Increased button size
+                const buttonWidth = 90;
+                const buttonHeight = 37.5;
                 pauseButton.setFixedSize(buttonWidth, buttonHeight);
                 playButton.setFixedSize(buttonWidth, buttonHeight);
 
                 pauseButton.on('pointerdown', () => {
                     pauseButton.setVisible(false);
                     playButton.setVisible(true);
-                    if (music) music.pause();
+                    music?.pause();
                     this.physics.pause();
+                    this.player.anims.pause();
                     if (this.objectSpawnTimer) {
                         this.objectSpawnTimer.paused = true;
                     }
@@ -486,8 +577,9 @@
                                 playButton.setInteractive();
                                 playButton.setVisible(false);
                                 pauseButton.setVisible(true);
-                                if (music) music.resume();
+                                music?.resume();
                                 this.physics.resume();
+                                this.player.anims.resume();
                                 if (this.objectSpawnTimer) {
                                     this.objectSpawnTimer.paused = false;
                                 }
@@ -530,10 +622,12 @@
                 this.physics.add.overlap(this.player, this.objects, this.collectObject, null, this);
                 this.physics.add.overlap(this.player, this.powerups, this.collectPowerup, null, this);
 
-                // Play music
-                music = this.sound.add('music', { loop: true });
+                // Load and play music if it's not already playing (it will be started in the new VideoIntro scene)
                 feverSound = this.sound.add('fever_sound');
-                if (music) music.play();
+                goodSound = this.sound.add('good_sound');
+                badSound = this.sound.add('bad_sound');
+                noSound = this.sound.add('no_sound'); // Initialize new sound
+                overSound = this.sound.add('over_sound'); // Initialize new sound
             }
 
             update () {
@@ -546,6 +640,15 @@
                     // Drain groove meter
                     if (!this.isFeverMode) {
                         this.grooveMeter -= 0.05;
+                        
+                        // Check if groove is low to play 'no' sound
+                        if (this.grooveMeter < 50 && !this.isGrooveLow) {
+                            this.isGrooveLow = true;
+                            noSound?.play();
+                        } else if (this.grooveMeter >= 50 && this.isGrooveLow) {
+                            this.isGrooveLow = false;
+                        }
+
                         if (this.grooveMeter <= 0) {
                             this.grooveMeter = 0;
                             this.scene.start('GameOver', { score: this.score, username: username });
@@ -589,9 +692,9 @@
                 this.grooveBar.clear();
                 let barColor = this.isFeverMode ? 0xffff00 : (this.grooveMeter < 50 ? 0xff0000 : 0x00ff00);
                 this.grooveBar.fillStyle(barColor, 1);
-                this.grooveBar.fillRect(this.game.config.width * 0.02, this.game.config.height * 0.09, (this.grooveMeter / 100) * 150, 15);
+                this.grooveBar.fillRect(this.game.config.width * 0.02, this.game.config.height * 0.09, (this.grooveMeter / 100) * 225, 22.5);
                 this.grooveBar.lineStyle(2, 0xffffff, 1);
-                this.grooveBar.strokeRect(this.game.config.width * 0.02, this.game.config.height * 0.09, 150, 15);
+                this.grooveBar.strokeRect(this.game.config.width * 0.02, this.game.config.height * 0.09, 225, 22.5);
             }
             
             spawnObject() {
@@ -601,15 +704,15 @@
                 
                 if (Phaser.Math.Between(1, 10) === 1) {
                     let powerup = this.powerups.create(x, y, 'powerup');
-                    powerup.setScale(0.025);
-                    powerup.setCircle(27.5);
+                    powerup.setScale(0.255);
+                    powerup.setCircle(187);
                     powerup.setVelocityY(this.OBJECT_SPEED);
                 } else {
                     let objectType = Phaser.Math.Between(0, 2);
                     let imageKey = ['peanut_butter', 'jelly', 'bread'][objectType];
                     let object = this.objects.create(x, y, imageKey);
-                    object.setScale(0.025);
-                    object.setCircle(27.5);
+                    object.setScale(0.255);
+                    object.setCircle(187);
                     object.setVelocityY(this.OBJECT_SPEED);
                 }
             }
@@ -623,6 +726,7 @@
                         this.grooveMeter -= 25;
                         this.comboCount = 0;
                     }
+                    badSound?.play();
                 } else {
                     this.comboCount++;
                     this.score += 10 * this.comboCount;
@@ -634,7 +738,7 @@
                         this.grooveMeter = 100;
                         if (!this.isFeverMode) {
                             this.isFeverMode = true;
-                            if (feverSound) feverSound.play();
+                            feverSound?.play();
                             this.time.addEvent({
                                 delay: 5000,
                                 callback: () => {
@@ -645,6 +749,7 @@
                             });
                         }
                     }
+                    goodSound?.play();
                 }
                 this.comboTimer = this.time.now;
             }
@@ -654,7 +759,7 @@
                 this.grooveMeter = 100;
                 if (!this.isFeverMode) {
                     this.isFeverMode = true;
-                    if (feverSound) feverSound.play();
+                    feverSound?.play();
                     this.time.addEvent({
                         delay: 5000,
                         callback: () => {
@@ -688,24 +793,26 @@
             }
 
             create() {
-                if (music) music.stop();
-                if (feverSound) feverSound.stop();
+                music?.stop();
+                feverSound?.stop();
+                overSound?.play(); // Play 'over' sound on the game over screen
                 
                 // Destroy all game objects and UI
                 this.children.each(child => child.destroy());
                 
-                // Display game over screen
+                // Display game over screen with bold text
                 this.add.image(this.game.config.width / 2, this.game.config.height / 2, 'game_over');
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.25, 'GAME OVER', { fontSize: '48px', fill: '#ff0000' }).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.35, `Final Score: ${this.finalScore}`, { fontSize: '32px', fill: '#ffffff' }).setOrigin(0.5);
-                this.add.text(this.game.config.width / 2, this.game.config.height * 0.4, `Player: ${this.username}`, { fontSize: '24px', fill: '#ffffff' }).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.25, 'GAME OVER', { fontSize: '48px', fill: '#ff0000', fontStyle: 'bold' }).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.35, `Final Score: ${this.finalScore}`, { fontSize: '32px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5);
+                this.add.text(this.game.config.width / 2, this.game.config.height * 0.4, `Player: ${this.username}`, { fontSize: '24px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5);
                 
-                // Play again button
+                // Play again button with bold text
                 const playAgainButton = this.add.text(this.game.config.width / 2, this.game.config.height * 0.55, 'PLAY AGAIN', {
                     fontSize: '28px',
                     fill: '#ffffff',
                     backgroundColor: '#00ff00',
-                    padding: { x: 20, y: 10 }
+                    padding: { x: 20, y: 10 },
+                    fontStyle: 'bold'
                 }).setOrigin(0.5).setInteractive();
 
                 playAgainButton.on('pointerdown', () => {
@@ -731,7 +838,7 @@
                 mode: Phaser.Scale.FIT,
                 autoCenter: Phaser.Scale.CENTER_BOTH,
             },
-            scene: [SplashScreen, MainMenu, Tutorial, Game, GameOver]
+            scene: [SplashScreen, MainMenu, Tutorial, VideoIntro, Game, GameOver]
         };
 
         window.onload = function() {
